@@ -4,6 +4,7 @@ var phantom = require('phantom');
 /* GET users listing. */
 var sitepage = null;
 router.get('/:url', function (req, res, next) {
+    var url= req.params.url;
     phantom.create()
         .then(instance => {
             phInstance = instance;
@@ -11,14 +12,18 @@ router.get('/:url', function (req, res, next) {
         })
         .then(page => {
             sitepage = page;
-            return page.open('https://medium.com/javascript-scene/javascript-es6-var-let-or-const-ba58b8dcde75')
+            var link= "http://"+url;
+            return page.open(link);
         })
         .then(status => {
             console.log(status);
-            return sitepage.render('./image/test.png')
+            if(!status=="fail")
+            return sitepage.render('./image/test.png');
+            else
+                page.open(link)
         })
         .then(() => {
-            console.log(`File created at [./stackoverflow.pdf]`);
+            console.log(`File created at /image`);
         })
         .catch(error => {
             console.log(error);
