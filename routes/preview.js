@@ -3,7 +3,12 @@ var router = express.Router();
 var phantom = require('phantom');
 /* GET users listing. */
 var sitepage = null;
-router.get('/:url', function (req, res, next) {
+router.get('/:url?', function (req, res, next) {
+    var url = req.query.url;
+    if( url.startsWith('http://')||url.startsWith('https://'))
+        ;
+    else
+        url='http://'+url;
     phantom.create()
         .then(instance => {
             phInstance = instance;
@@ -11,20 +16,24 @@ router.get('/:url', function (req, res, next) {
         })
         .then(page => {
             sitepage = page;
-            return page.open('https://medium.com/javascript-scene/javascript-es6-var-let-or-const-ba58b8dcde75')
+            sitepage.property('viewportSize', {width: 1366, height: 768});
+            return sitepage.open(url);
         })
         .then(status => {
             console.log(status);
-            return sitepage.render('./image/test.png')
+            return sitepage.includeJs("http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js");
+        }).then(()=>{
+        return sitepage.evaluate(function(){
+            return $('body').html().toString();
         })
-        .then(() => {
-            console.log(`File created at [./stackoverflow.pdf]`);
+    })
+        .then(content => {
+            res.send(content);
         })
         .catch(error => {
-            console.log(error);
+            res.send(error);
             phInstance.exit();
         })
-    next();
 });
 
 module.exports = router;
