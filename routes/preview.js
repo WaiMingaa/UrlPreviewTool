@@ -1,10 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var phantom = require('phantom');
+var phantomservice =require('./../service/phantom-service');
 /* GET users listing. */
 var sitepage = null;
-router.get('/:url', function (req, res, next) {
-    var url= req.params.url;
+router.get('/', function (req, res, next) {
+   var text = phantomservice.getMetadata('https://richpreview.com/');
+  // console.log(text);
+  /*  var url= req.params.url;
     phantom.create()
         .then(instance => {
             phInstance = instance;
@@ -28,7 +31,7 @@ router.get('/:url', function (req, res, next) {
         .catch(error => {
             console.log(error);
             phInstance.exit();
-        })
+        });*/
     next();
 });
 

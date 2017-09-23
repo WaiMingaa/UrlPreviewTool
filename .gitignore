@@ -90,4 +90,9 @@ $RECYCLE.BIN/
 #SSL
 ssl/*
 
+#.idea
+./.idea
+
+
+
 

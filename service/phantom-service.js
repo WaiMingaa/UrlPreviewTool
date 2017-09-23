@@ -1,47 +1,82 @@
 /**
  * Created by wmlam on 19/9/2017.
  */
-var p = {
-    getstatus: _getstatus,
-    done: _done,
-    getimage: _getimage
-}
-var pageinstance;
+var cheerio = require('cheerio');
+var phantom = require('phantom');
+module.exports = (function () {
 
-function _getimage(url){
-
-}
-
-function _createpageInstance() {
-    phantom.create()
-        .then(instance => {
+    function _getMetadata(url) {
+        phantom.create().then(instance => {
             return instance.createPage();
+        }).then(function (page) {
+            sitepage =page;
+            console.log(url);
+            return page.open(url)
+        }).then(function (status) {
+            console.log(status);
+            if (status== 'success') {
+                sitepage.evaluate(function () {
+                    return document.getElementsByTagName('head')[0].innerHTML;
+                }).then(function (html) {
+                   // console.log(html);
+                    var $ = cheerio.load(html);
+                    //console.log($);
+                    var text = $('meta').html();
+                    console.log(text);
+
+                })
+
+            }
+            else {
+                console.log('there');
+                return false;
+            }
+
+        }).catch(function (error) {
+            console.log(error);
+            phInstance.exit();
         })
-
-}
-
-function _done() {
-
-    if (pageinstance) {
-        phInstance.exit();
-        return true
     }
-    ;
-else
-    return false;
 
-}
-function _getpageinstance() {
-    if (!pageinstance) {
-        pageinstance = _createpageInstance();
+    function _getStatus(url) {
+        phantom.create().then(instance => {
+            return instance.createPage();
+        }).then(function (page) {
+            page.open(url).then(function (status) {
+                if (!status == "fail")
+                    return true;
+                else
+                    return false;
+            })
+        }).catch(function (error) {
+            console.log(error);
+            phInstance.exit();
+        })
     }
-    return pageinstance;
-}
 
-function _getstatus(url) {
+    function _getImage(url) {
+        phantom.create().then(instance => {
+            return instance.createPage();
+        }).then(function (page) {
+            page.open(url).then(function (status) {
+                if (!status == "fail")
+                    return sitepage.render('./image/capture.jpg');
+                else
+                    false;
+            })
+        }).catch(function (error) {
+            console.log(error);
+            phInstance.exit();
+        })
+    }
 
-
-}
+    return {
+        getStatus: _getStatus,
+        getImage: _getImage,
+        getMetadata: _getMetadata
+    }
+})();
+/*
 phantom.create()
     .then(instance => {
         phInstance = instance;
@@ -65,4 +100,4 @@ phantom.create()
     .catch(error => {
         console.log(error);
         phInstance.exit();
-    })
+    })*/
