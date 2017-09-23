@@ -3,12 +3,8 @@ var router = express.Router();
 var phantom = require('phantom');
 /* GET users listing. */
 var sitepage = null;
-router.get('/:url?', function (req, res, next) {
-    var url = req.query.url;
-    if( url.startsWith('http://')||url.startsWith('https://'))
-        ;
-    else
-        url='http://'+url;
+router.get('/:url', function (req, res, next) {
+    var url= req.params.url;
     phantom.create()
         .then(instance => {
             phInstance = instance;
@@ -16,24 +12,24 @@ router.get('/:url?', function (req, res, next) {
         })
         .then(page => {
             sitepage = page;
-            sitepage.property('viewportSize', {width: 1366, height: 768});
-            return sitepage.open(url);
+            var link= "http://"+url;
+            return page.open(link);
         })
         .then(status => {
             console.log(status);
-            return sitepage.includeJs("http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js");
-        }).then(()=>{
-        return sitepage.evaluate(function(){
-            return $('body').html().toString();
+            if(!status=="fail")
+            return sitepage.render('./image/test.png');
+            else
+                page.open(link)
         })
-    })
-        .then(content => {
-            res.send(content);
+        .then(() => {
+            console.log(`File created at /image`);
         })
         .catch(error => {
-            res.send(error);
+            console.log(error);
             phInstance.exit();
         })
+    next();
 });
 
 module.exports = router;
