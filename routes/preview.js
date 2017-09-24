@@ -5,7 +5,7 @@ var phantomservice =require('./../service/phantom-service');
 /* GET users listing. */
 var sitepage = null;
 router.get('/', function (req, res, next) {
-   var text = phantomservice.getMetadata('https://richpreview.com/');
+   var text = phantomservice.getMetadata('https://www.youtube.com/');
   // console.log(text);
   /*  var url= req.params.url;
     phantom.create()

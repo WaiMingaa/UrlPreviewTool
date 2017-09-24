@@ -18,11 +18,12 @@ module.exports = (function () {
                 sitepage.evaluate(function () {
                     return document.getElementsByTagName('head')[0].innerHTML;
                 }).then(function (html) {
-                   // console.log(html);
                     var $ = cheerio.load(html);
-                    //console.log($);
-                    var text = $('meta').html();
-                    console.log(text);
+                    //console.log(html);
+                    var title = $('title').html();
+                    var metadescription = $('meta[name=description]').attr('content');
+                    console.log('title :' +title);
+                    console.log('meta description :'+metadescription);
 
                 })
 
