@@ -91,7 +91,7 @@ $RECYCLE.BIN/
 ssl/*
 
 #.idea
-./.idea
+*.idea*
 
 
 
